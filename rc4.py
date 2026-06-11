@@ -9,7 +9,6 @@ def ksa(key: bytes) -> list:
     S = list(range(256))
     j = 0
     for i in range(256):
-        # Mistura o estado usando a chave de forma circular
         j = (j + S[i] + key[i % key_len]) % 256
         S[i], S[j] = S[j], S[i]
     return S
@@ -22,14 +21,12 @@ def prga(S: list, data_len: int):
         i = (i + 1) % 256
         j = (j + S[i]) % 256
         S[i], S[j] = S[j], S[i]
-        # O byte do keystream é S[(S[i]+S[j]) mod 256]
         yield S[(S[i] + S[j]) % 256]
  
  
 def rc4_process(key: bytes, data: bytes) -> bytes:
     S = ksa(key)
     keystream = prga(S, len(data))
-    # XOR byte a byte entre dados e keystream
     return bytes(b ^ k for b, k in zip(data, keystream))
  
 SALT_SIZE    = 16
