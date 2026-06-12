@@ -1,3 +1,4 @@
 arquivo_de_teste_cifrado.txt
 arquivo_de_teste_decifrado.txt
 rc4_test.py
+__pycache__
