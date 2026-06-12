@@ -3,6 +3,10 @@ import os
 import hashlib
 import secrets
 
+SALT_SIZE = 16
+KEY_SIZE = 32
+PBKDF2_ITER = 200_000
+
 def ksa(key: bytes) -> list:
     key_len = len(key)
     S = list(range(256))
@@ -28,18 +32,14 @@ def rc4_process(key: bytes, data: bytes) -> bytes:
     keystream = prga(S, len(data))
     return bytes(b ^ k for b, k in zip(data, keystream))
 
-SALT_SIZE = 16
-KEY_SIZE = 32
-PBKDF2_ITER = 200_000
-
 
 def derive_key(password: str, salt: bytes) -> bytes:
     return hashlib.pbkdf2_hmac(
-        hash_name   = 'sha256',
-        password    = password.encode('utf-8'),
-        salt        = salt,
-        iterations  = PBKDF2_ITER,
-        dklen       = KEY_SIZE
+        hash_name = 'sha256',
+        password = password.encode('utf-8'),
+        salt = salt,
+        iterations = PBKDF2_ITER,
+        dklen = KEY_SIZE
     )
 
 def criptografar(caminho_entrada: str, senha: str) -> str:
@@ -67,7 +67,7 @@ def decriptografar(caminho_entrada: str, senha: str) -> str:
     if len(conteudo) < SALT_SIZE:
         raise ValueError("Arquivo cifrado inválido ou corrompido (muito pequeno).")
 
-    salt           = conteudo[:SALT_SIZE]
+    salt = conteudo[:SALT_SIZE]
     dados_cifrados = conteudo[SALT_SIZE:]
 
     chave = derive_key(senha, salt)
